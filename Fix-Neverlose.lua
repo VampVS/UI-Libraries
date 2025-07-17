@@ -619,8 +619,8 @@ function Library:Window(options)
                             local MousePos = UIS:GetMouseLocation().X
                             local FrameSize = sliderFrame.AbsoluteSize.X
                             local FramePos = sliderFrame.AbsolutePosition.X
-                            local pos = snap((MousePos-FramePos)/FrameSize,step)
-                            percentage = math.clamp(pos,0,0.9)
+                            local pos = snap( (MousePos-FramePos) / FrameSize, step)
+                            percentage = math.clamp(pos, 0, 0.9)
 
                             Value = ((((tonumber(options.max) - tonumber(options.min)) / 0.9) * percentage)) + tonumber(options.min)
                             Value = round(Value, options.float)
@@ -653,15 +653,16 @@ function Library:Window(options)
 
                     sliderTextBox.FocusLost:Connect(function(Enter)
                         TweenService:Create(sliderLabel, TweenInfo.new(0.06, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {TextColor3 = Color3.fromRGB(157, 171, 182)}):Play()
+                            
                         if Enter then
-                            if sliderTextBox.Text ~= nil and sliderTextBox.Text ~= "" then
+                            if sliderTextBox.Text ~= nil and sliderTextBox.Text ~= "" and typeof(tonumber(sliderTextBox.Text)) == "number" then
                                 if tonumber(sliderTextBox.Text) > options.max then
                                     sliderTextBox.Text = tostring(options.max)
                                     options.callback(options.max)
                                 elseif tonumber(sliderTextBox.Text) < options.min then
                                     sliderTextBox.Text = tostring(options.min)
                                     options.callback(options.min)
-                                elseif not tonumber(sliderTextBox.Text) < options.min and not tonumber(sliderTextBox.Text) > options.max then
+                                elseif tonumber(sliderTextBox.Text) > options.min and tonumber(sliderTextBox.Text) < options.max then
                                     options.callback(sliderTextBox.Text)
                                 end
                             end
