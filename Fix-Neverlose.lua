@@ -5,7 +5,7 @@ local NeverloseVersion = "v1.1A."
 local TweenService = game:GetService("TweenService")
 local input = game:GetService("UserInputService")
 
-for i,v in next, game.CoreGui:GetChildren() do
+for _, v in next, game.CoreGui:GetChildren() do
     if v:IsA("ScreenGui") and v.Name == "Neverlose" then
         v:Destroy() 
     end
@@ -859,6 +859,8 @@ function Library:Window(options)
                             end
                         end
                     end)
+
+                    return textBox
                 end
 
                 function elements:Colorpicker(options)
