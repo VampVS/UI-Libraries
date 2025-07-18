@@ -774,7 +774,7 @@ function Library:Window(options)
                     dropListLayout.SortOrder = Enum.SortOrder.LayoutOrder
                     Resize(25)
 
-                    for i,v in next, options.list do
+                    for _, v in next, options.list do
                         local dropdownBtn = Instance.new("TextButton")
                         local Count = 1
 
@@ -805,7 +805,7 @@ function Library:Window(options)
                 end
 
                 function elements:Textbox(options)
-                    if not options.text or not options.value or not options.callback then Notify("Textbox", "Missing arguments!") return end
+                    if not options.text or not options.value or not options.callback or not options.type then Notify("Textbox", "Missing arguments!") return end
 
                     local Textbox = Instance.new("Frame")
                     local textBoxLabel = Instance.new("TextLabel")
@@ -860,7 +860,28 @@ function Library:Window(options)
                         end
                     end)
 
-                    return textBox
+                    if options.type == "number" then
+                        textBox:GetPropertyChangedSignal("Text"):Connect(function()
+                            local filtered = textBox.Text:gsub("[^%d%.]", "")        
+                            local dotCount = 0
+                            local newText = ""
+                                
+                            for i = 1, #filtered do
+                                local c = filtered:sub(i, i)
+                                  if c == "." then
+                                      dotCount += 1
+                                      if dotCount > 1 then
+                                           continue
+                                        end
+                                en
+                                newText = newText .. c
+                            end
+    
+                            if textBox.Text ~= newText then
+                                 textBox.Text = newText
+                                    end
+                                end)
+                    end
                 end
 
                 function elements:Colorpicker(options)
