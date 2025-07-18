@@ -873,7 +873,7 @@ function Library:Window(options)
                                       if dotCount > 1 then
                                            continue
                                         end
-                                en
+                                    end
                                 newText = newText .. c
                             end
     
