@@ -128,32 +128,76 @@ function Library:CreateBind(parent, text, settingKey)
 	return frame
 end
 
-function Library:CreateDropdown(parent, text, options, configTable, configKey)
-	local frame = Instance.new("Frame", parent); frame.Size, frame.BackgroundTransparency = UDim2.new(1, -20, 0, 35), 1; frame.ZIndex = 5
-	local label = Instance.new("TextLabel", frame); label.Size, label.Text = UDim2.new(0.4, 0, 1, 0), text
-	label.Font, label.TextSize, label.TextColor3, label.TextXAlignment, label.BackgroundTransparency = Enum.Font.Oswald, 16, Color3.new(0.8, 0.8, 0.8), Enum.TextXAlignment.Left, 1
-	local mainBtn = Instance.new("TextButton", frame); mainBtn.Size, mainBtn.Position = UDim2.new(0.35, 0, 0, 28), UDim2.new(1, -195, 0.5, -14)
+function Library:CreateDropdown(parent: any, text: string, options: {string}, configTable: any, configKey: string): Frame
+	local dropdownFrame: Frame = Instance.new("Frame", parent)
+	dropdownFrame.Size, dropdownFrame.BackgroundTransparency = UDim2.new(1, -20, 0, 35), 1
+	dropdownFrame.ZIndex = 5
+
+	local label: TextLabel = Instance.new("TextLabel", dropdownFrame)
+	label.Size, label.Text = UDim2.new(0.4, 0, 1, 0), text
+	label.Font, label.TextSize, label.TextColor3 = Enum.Font.Oswald, 16, Color3.new(0.8, 0.8, 0.8)
+	label.TextXAlignment, label.BackgroundTransparency = Enum.TextXAlignment.Left, 1
+
+	local mainBtn: TextButton = Instance.new("TextButton", dropdownFrame)
+	mainBtn.Size, mainBtn.Position = UDim2.new(0.35, 0, 0, 28), UDim2.new(1, -195, 0.5, -14)
 	mainBtn.BackgroundColor3, mainBtn.Text = Color3.fromRGB(20, 26, 38), configTable[configKey]
-	mainBtn.Font, mainBtn.TextSize, mainBtn.TextColor3 = Enum.Font.Oswald, 14, Color3.new(1, 1, 1); Instance.new("UICorner", mainBtn)
-	local list = Instance.new("Frame", mainBtn); list.Visible = false; list.Size, list.Position = UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 1, 5); list.BackgroundColor3, list.ZIndex = Color3.fromRGB(16, 22, 32), 100
-	Instance.new("UICorner", list); local layout = Instance.new("UIListLayout", list); layout.SortOrder = Enum.SortOrder.LayoutOrder
-	
+	mainBtn.Font, mainBtn.TextSize, mainBtn.TextColor3 = Enum.Font.Oswald, 14, Color3.new(1, 1, 1)
+	mainBtn.AutoButtonColor = false
+	Instance.new("UICorner", mainBtn)
+
+	local stroke: UIStroke = Instance.new("UIStroke", mainBtn)
+	stroke.Color, stroke.Thickness, stroke.ApplyStrokeMode = Color3.fromRGB(40, 45, 60), 1, Enum.ApplyStrokeMode.Border
+
+	local list: Frame = Instance.new("Frame", mainBtn)
+	list.Name = "List"
+	list.Size, list.Position, list.Visible = UDim2.new(1, 0, 0, 0), UDim2.new(0, 0, 1, 5), false
+	list.BackgroundColor3, list.BorderSizePixel, list.ZIndex = Color3.fromRGB(16, 22, 32), 0, 100
+	Instance.new("UICorner", list)
+
+	local listLayout: UIListLayout = Instance.new("UIListLayout", list)
+	listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
 	mainBtn.MouseButton1Click:Connect(function()
 		list.Visible = not list.Visible
-		if list.Visible then list.Size = UDim2.new(1, 0, 0, #options * 28); frame.ZIndex = 10 else frame.ZIndex = 5 end
+		if list.Visible then
+			list.Size = UDim2.new(1, 0, 0, #options * 28)
+			stroke.Color = Color3.fromRGB(180, 100, 255)
+			dropdownFrame.ZIndex = 10
+		else
+			stroke.Color = Color3.fromRGB(40, 45, 60)
+			dropdownFrame.ZIndex = 5
+		end
 	end)
 	
 	for _, opt in pairs(options) do
-		local btn = Instance.new("TextButton", list); btn.Size, btn.Text, btn.ZIndex = UDim2.new(1, 0, 0, 28), opt, 101
-		btn.BackgroundColor3, btn.BackgroundTransparency, btn.TextColor3, btn.Font, btn.TextSize = Color3.fromRGB(25, 30, 45), 1, Color3.new(0.6, 0.6, 0.6), Enum.Font.Oswald, 14
-		btn.MouseEnter:Connect(function() btn.BackgroundTransparency = 0.8; btn.TextColor3 = Color3.new(1,1,1) end)
-		btn.MouseLeave:Connect(function() btn.BackgroundTransparency = 1; btn.TextColor3 = Color3.new(0.6,0.6,0.6) end)
-		btn.MouseButton1Click:Connect(function()
-			mainBtn.Text = opt; list.Visible = false; frame.ZIndex = 5; configTable[configKey] = opt
-			if self.UpdatePreview then self.UpdatePreview() end
+		local optBtn: TextButton = Instance.new("TextButton", list)
+		optBtn.Name, optBtn.Size, optBtn.Text = opt, UDim2.new(1, 0, 0, 28), opt
+		optBtn.BackgroundColor3, optBtn.BackgroundTransparency = Color3.fromRGB(25, 30, 45), 1
+		optBtn.Font, optBtn.TextSize, optBtn.TextColor3, optBtn.ZIndex = Enum.Font.Oswald, 14, Color3.new(0.6, 0.6, 0.6), 101
+		optBtn.MouseEnter:Connect(function()
+			optBtn.BackgroundTransparency = 0.8
+			optBtn.TextColor3 = Color3.new(1, 1, 1)
+		end)
+		
+		optBtn.MouseLeave:Connect(function()
+			optBtn.BackgroundTransparency = 1
+			optBtn.TextColor3 = Color3.new(0.6, 0.6, 0.6)
+		end)
+		
+		optBtn.MouseButton1Click:Connect(function()
+			mainBtn.Text = opt
+			list.Visible = false
+			stroke.Color = Color3.fromRGB(40, 45, 60)
+			dropdownFrame.ZIndex = 5
+			configTable[configKey] = opt
+
+			if self.UpdatePreview then
+				self.UpdatePreview()
+			end
 		end)
 	end
-	return frame
+	
+	return dropdownFrame
 end
 
 return Library
